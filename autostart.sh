@@ -114,6 +114,13 @@ xset -dpms
 xset s off
 xset s noblank
 
+export GST_DEBUG=3,video_sink:5
+export QT_LOGGING_RULES=qt.scenegraph.general=true
+
+export QT_OPENGL=egl
+export QSG_NO_VSYNC=1
+export QSG_RENDER_LOOP=threaded
+
 while [ true ]; do
   sh $HOME/run_dash.sh
 done
