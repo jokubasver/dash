@@ -11,6 +11,7 @@ display_help() {
     echo "   -adi, --adddesktopicon           Add desktop icon"
     echo "   -asd, --autostartdaemon          Add autostart daemon"
     echo "   -axi, --addxinit                 Add xinit autostart"
+    echo "   -ase, --autostarteglfs           Add eglfs autostart"
     echo "   -h, --help                       Show help of script"
     echo
     echo "Example: Add an desktop icon"
@@ -146,6 +147,54 @@ EOT
 
 }
 
+add_eglfs_autostart () {
+  echo "Creating/Updating ~/.bashrc for EGLFS autostart"
+  # Remove existing xinit section from .bashrc to avoid conflicts
+  sed -i '/### xinit/,/fi/d' "$HOME/.bashrc" || true
+
+  # Append new EGLFS autostart section to .bashrc
+  cat <<EOT >> "$HOME/.bashrc"
+
+### EGLFS Autostart for dash application
+if [ "\$(tty)" = "/dev/tty1" ]; then
+  # Set environment variables for GStreamer and Qt Quick
+  export GST_DEBUG="3,video_sink:5"
+  export QT_LOGGING_RULES="qt.scenegraph.general=true"
+
+  # Tell Qt to use the EGLFS platform plugin
+  export QT_QPA_PLATFORM=eglfs
+
+  # Qt Quick EGLFS specific optimizations
+  export QT_OPENGL=es2
+  export QSG_NO_VSYNC=1
+  export QSG_RENDER_LOOP=threaded # Good for performance
+
+  # Touchscreen calibration/rotation (if needed for your display)
+  # Example: For a specific device, 90-degree rotation, inverted X/Y
+  # export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="/dev/input/event0:rotate=90:invertx:inverty"
+  # Use 'libinput list-devices' or 'ls /dev/input/event*' to find your touch device.
+
+  # Loop to restart the application if it crashes
+  while true; do
+    sh "$HOME/run_dash.sh"
+    sleep 1 # Wait a bit before restarting
+  done
+fi
+EOT
+
+  # Create or update ~/run_dash.sh
+  echo "Creating/Updating ~/run_dash.sh and linking to ~/dash/bin/dash"
+  cat <<EOT > "$HOME/run_dash.sh"
+#!/usr/bin/env sh
+# Ensure the application executable is correct and has execute permissions
+"$HOME/dash/bin/dash" >> "$HOME/dash/bin/dash.log" 2>&1
+EOT
+  chmod +x "$HOME/run_dash.sh"
+
+  echo "EGLFS autostart configuration complete. Reboot for changes to take effect."
+
+}
+
 # Main Menu
 while :
 do
@@ -163,6 +212,12 @@ do
         -axi | --addxinit)
             if [ $# -ne 0 ]; then
               add_xinit_autostart
+              exit 0
+            fi
+          ;;
+        -ase | --autostarteglfs)
+            if [ $# -ne 0 ]; then
+              add_eglfs_autostart
               exit 0
             fi
           ;;
