@@ -126,11 +126,18 @@ Run `./autostart.sh --autostarteglfs`
 
 This will setup `.bashrc` to autostart openDsh using EGLFS.
 
-### 8. Disable sunnecessary services and reboot
+### 8. Disable unnecessary services and reboot
 
 Before we reboot, let's disable some unnecessary services to speed up boot time:
 
 `sudo systemctl disable NetworkManager-wait-online.service e2scrub_reap.service ModemManager.service avahi-daemon.service rpi-eeprom-update.service `
 
 Finally, reboot with `sudo reboot now` and you should load into openDsh.
+
+### 9. Android Auto setup in openDsh
+click the cog icon in the top right corner and turn off RtAudio - at least on my setup RtAudio does not play any audio. 
+
+1080p is a bit slow on a Pi 3B+, 720p works a lot better. 
+
+Be sure to use 60FPS - gstreamer latency has been optimized for 60FPS and uses less CPU.
 
