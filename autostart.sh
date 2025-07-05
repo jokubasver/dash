@@ -157,17 +157,11 @@ add_eglfs_autostart () {
 
 ### EGLFS Autostart for dash application
 if [ "\$(tty)" = "/dev/tty1" ]; then
-  # Set environment variables for GStreamer and Qt Quick
+  # Set debugging
   export GST_DEBUG="3,video_sink:5"
-  export QT_LOGGING_RULES="qt.scenegraph.general=true"
 
   # Tell Qt to use the EGLFS platform plugin
   export QT_QPA_PLATFORM=eglfs
-
-  # Qt Quick EGLFS specific optimizations
-  export QT_OPENGL=es2
-  export QSG_NO_VSYNC=1
-  export QSG_RENDER_LOOP=threaded # Good for performance
 
   # Touchscreen calibration/rotation (if needed for your display)
   # Example: For a specific device, 90-degree rotation, inverted X/Y
