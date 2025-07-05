@@ -28,15 +28,109 @@ https://youtu.be/CIdEN2JNAzw
 
 ## Install Script
 
-Dash can be built automatically utilizing an included script.
+Dash can be built automatically utilizing an included script. 
 
-The install script included in the dash repo will install all the required packages and compile all portions of the OpenDash project.
+However, some extra steps are required to enhance performance and setup the Raspberry Pi environment for proper function.
 
-### 1. Clone the repo, Run the install script
+The following guide has been tested on a Raspberry Pi 3B+, though it should work for newer Pi revisions too.
+
+### 1. Flash Raspberry Pi OS Lite (64-Bit)
+It's easiest to do this with Raspberry Pi Imager.
+
+Do not use the Legacy Bullseye OS build - the current Bookworm works fine.
+
+Also, do not set WiFi through Pi Imager, as it seems to not currently work and breaks WiFi entirely. We will setup WiFi on the Pi itself.
+
+It's a good idea to setup a user and password, and enable SSH in Raspberry Pi Imager.
+
+### 2. Edit config.txt
+Once the OS is flashed to your SD card, replug your reader, access the bootfs partition and edit config.txt with the following at the very end:
 ```
-git clone https://github.com/openDsh/dash
+# Speed up boot
+disable_splash=1
+boot_delay=0
+force_turbo=1
+dtparam=krnbt
+```
 
+On bookworm, there's no need to set the `gpu_mem` parameter - it's all handled automatically.
+
+On Pi 3 series it's useful to do some overclocking, however - it may not be stable on your device, but on my Pi it works fine. If you choose to use overcloking, also add:
+```
+[pi3]
+gpu_freq=500
+over_voltage=2
+soft_temp_limit=70
+temp_limit=85
+sdram_freq=580
+sdram_schmoo=0x02000020
+over_voltage_sdram=5
+dtparam=sd_overclock=100 
+avoid_warnings=1
+```
+
+### 3. First boot and setup
+Now you can boot your Pi. If you setup your user and enabled SSH while flashing with Raspberry Pi Imager, you can use Ethernet and login via ssH. Otherwise, use a monitor and keyboard to complete user setup.
+
+Once the Pi is running, use `sudo raspi-config` to setup Wifi, SSH and autologin.
+
+### 4. Update system
+Run `sudo apt update && sudo apt upgrade -y` to update the OS.
+
+Once done, reboot with `sudo reboot now`
+
+### 5. Setup zram, install git
+Before we start installing dash, it's a good idea to add zram - this is mandatory for Raspberry Pis that have less than 2GB RAM, otherwise compile will fail. It's also fine to use zram even if your device has more than 2GB RAM.
+
+Run `sudo apt install git systemd-zram-generator -y`
+
+Now we need to configure zram. Run `sudo nano /etc/systemd/zram-generator.conf` and edit it like this:
+```
+[zram0]
+zram-size = ram * 2
+compression-algorithm = lz4
+```
+
+Reload systemd daemon and start the zram service with `sudo systemctl daemon-reload && sudo systemctl start systemd-zram-setup@zram0.service`
+
+Finally, lets add some sysctl tweaks. Run `sudo nano /etc/sysctl.conf` and at the end add:
+```
+vm.vfs_cache_pressure=500
+vm.swappiness=100
+vm.dirty_background_ratio=1
+vm.dirty_ratio=50
+```
+
+Run `sudo sysctl --system` to apply changes.
+
+### 6. Compile openDsh
+We're ready to install openDsh.
+
+Run:
+```
+git clone https://github.com/jokubasver/dash.git
 cd dash
-
-./install.sh
+sudo chmod +x new_install.sh
+./new_install.sh
 ```
+It will take a while...
+
+### 7. Setup EGLFS autostart.
+Once openDsh is finished compiling, now we can setup autostart.
+
+There are multiple ways to setup autostart of dash. Run `./autostart.sh` to see the available options.
+
+The easiest, best performant and effiecient way is to use EGLFS - this does not require X11, Wayland and runs great even on a Lite RPi OS without a desktop environment.
+
+Run `./autostart.sh --autostarteglfs`
+
+This will setup `.bashrc` to autostart openDsh using EGLFS.
+
+### 8. Disable sunnecessary services and reboot
+
+Before we reboot, let's disable some unnecessary services to speed up boot time:
+
+`sudo systemctl disable NetworkManager-wait-online.service e2scrub_reap.service ModemManager.service avahi-daemon.service rpi-eeprom-update.service `
+
+Finally, reboot with `sudo reboot now` and you should load into openDsh.
+
