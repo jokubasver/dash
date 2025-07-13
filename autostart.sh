@@ -156,21 +156,48 @@ add_eglfs_autostart () {
   cat <<EOT >> "$HOME/.bashrc"
 
 ### EGLFS Autostart for dash application
-if [ "\$(tty)" = "/dev/tty1" ]; then
+if [ "$(tty)" = "/dev/tty1" ]; then
   # Set debugging
   export GST_DEBUG="3,video_sink:5"
 
   # Tell Qt to use the EGLFS platform plugin
   export QT_QPA_PLATFORM=eglfs
+  export QT_QPA_EGLFS_SWAPINTERVAL=0
+  export QT_QPA_EGLFS_FORCEVSYNC=0
+
+
+  # Useful settings for high DPI/portrait displays (for example: Waveshare 5.5 inch 1440x2560)
+  #
+  # Screen rotation:
+  export QT_QPA_EGLFS_ROTATION=90
+  #
+  # Text scaling:
+  #export QT_FONT_DPI=240
+  #
+  # Global QT scaling:
+  export QT_SCALE_FACTOR=2
+
+
+  export GST_GL_PLATFORM=egl
+  export GST_GL_API=gles2
+  export QSG_NO_VSYNC=1
+  export QSG_RENDER_LOOP=threaded
+  export QSG_ANTIALIASING_METHOD=msaa
+
 
   # Touchscreen calibration/rotation (if needed for your display)
+  #
   # Example: For a specific device, 90-degree rotation, inverted X/Y
-  # export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="/dev/input/event0:rotate=90:invertx:inverty"
+  #export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS=/dev/input/event0:rotate=90
+  #
   # Use 'libinput list-devices' or 'ls /dev/input/event*' to find your touch device.
+  #
+  # Waveshare 5.5 inch 1440x2560 display has a hardware button for switching touch rotation and therefore this is not needed.
+
 
   # Loop to restart the application if it crashes
   while true; do
-    sh "$HOME/run_dash.sh"
+    sh "/home/jokubas/run_dash.sh"
     sleep 1 # Wait a bit before restarting
   done
 fi
