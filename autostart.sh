@@ -169,13 +169,13 @@ if [ "\$(tty)" = "/dev/tty1" ]; then
   # Useful settings for high DPI/portrait displays (for example: Waveshare 5.5 inch 1440x2560)
   #
   # Screen rotation:
-  export QT_QPA_EGLFS_ROTATION=90
+  #export QT_QPA_EGLFS_ROTATION=90
   #
   # Text scaling:
   #export QT_FONT_DPI=240
   #
   # Global QT scaling:
-  export QT_SCALE_FACTOR=2
+  #export QT_SCALE_FACTOR=2
 
 
   export GST_GL_PLATFORM=egl
@@ -188,7 +188,7 @@ if [ "\$(tty)" = "/dev/tty1" ]; then
   # Touchscreen calibration/rotation (if needed for your display)
   #
   # Example: For a specific device, 90-degree rotation, inverted X/Y
-  #export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS=/dev/input/event0:rotate=90
+  #export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="/dev/input/event0:rotate=90:invertx:inverty"
   #
   # Use 'libinput list-devices' or 'ls /dev/input/event*' to find your touch device.
   #
