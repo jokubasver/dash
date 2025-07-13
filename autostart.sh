@@ -156,7 +156,7 @@ add_eglfs_autostart () {
   cat <<EOT >> "$HOME/.bashrc"
 
 ### EGLFS Autostart for dash application
-if [ "$(tty)" = "/dev/tty1" ]; then
+if [ "\$(tty)" = "/dev/tty1" ]; then
   # Set debugging
   export GST_DEBUG="3,video_sink:5"
 
@@ -197,7 +197,7 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 
   # Loop to restart the application if it crashes
   while true; do
-    sh "/home/jokubas/run_dash.sh"
+    sh "$HOME/run_dash.sh"
     sleep 1 # Wait a bit before restarting
   done
 fi
