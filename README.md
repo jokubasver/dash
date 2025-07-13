@@ -104,7 +104,7 @@ Now we need to configure zram. Run `sudo nano /etc/systemd/zram-generator.conf` 
 ```
 [zram0]
 zram-size = ram * 2
-compression-algorithm = lz4
+compression-algorithm = zstd
 ```
 
 Reload systemd daemon and start the zram service with `sudo systemctl daemon-reload && sudo systemctl start systemd-zram-setup@zram0.service`
