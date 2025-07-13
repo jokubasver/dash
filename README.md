@@ -51,9 +51,10 @@ disable_splash=1
 boot_delay=0
 force_turbo=1
 dtparam=krnbt
+gpu_mem=128
 ```
 
-On bookworm, there's no need to set the `gpu_mem` parameter - it's all handled automatically.
+If you are using a display with a resolution that's higher than 1080p, set `gpu_mem=256` instead.
 
 On Pi 3 series it's useful to do some overclocking, however - it may not be stable on your device, but on my Pi it works fine. If you choose to use overcloking, also add:
 ```
@@ -68,6 +69,21 @@ over_voltage_sdram=5
 dtparam=sd_overclock=100 
 avoid_warnings=1
 ```
+
+On my Pi 4 these are stable overclock settings:
+```
+[pi4]
+over_voltage=6
+arm_freq=2147
+gpu_freq=750
+```
+
+Waveshare 5.5inch 1440x2560 needs an extra command at the start of `cmdline.txt`:
+```
+video=HDMI-A-1:1440x2560@50D,rotate=90
+```
+
+Note that this display does not work on Pi 3-series.
 
 ### 3. First boot and setup
 Now you can boot your Pi. If you setup your user and enabled SSH while flashing with Raspberry Pi Imager, you can use Ethernet and login via ssH. Otherwise, use a monitor and keyboard to complete user setup.
@@ -125,6 +141,8 @@ The easiest, best performant and effiecient way is to use EGLFS - this does not 
 Run `./autostart.sh --autostarteglfs`
 
 This will setup `.bashrc` to autostart openDsh using EGLFS.
+
+Additional setup can be performed by `sudo nano .bashrc` - there are useful options for high DPI/portrait displays (like the Waveshare 5.5 inch 1440x2560 display)
 
 ### 8. Disable unnecessary services and reboot
 
