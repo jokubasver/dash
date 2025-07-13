@@ -258,10 +258,10 @@ if [ $bluez = false ]
 
     echo Installing bluez
     sudo apt-get install -y libdbus-1-dev libudev-dev libical-dev libreadline-dev libjson-c-dev
-    wget www.kernel.org/pub/linux/bluetooth/bluez-5.63.tar.xz
-    tar -xvf bluez-5.63.tar.xz bluez-5.63/
-    rm bluez-5.63.tar.xz
-    cd bluez-5.63
+    wget www.kernel.org/pub/linux/bluetooth/bluez-5.83.tar.xz
+    tar -xvf bluez-5.83.tar.xz bluez-5.83/
+    rm bluez-5.83.tar.xz
+    cd bluez-5.83
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library --disable-manpages --enable-deprecated
     make -j$(nproc)
     sudo make install
@@ -312,7 +312,7 @@ else
   cd build
 
   #beginning cmake
-  cmake -DCMAKE_BUILD_TYPE=Release ../
+  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-flto -march=native" ../
   if [[ $? -eq 0 ]]; then
       echo -e Aasdk CMake completed successfully'\n'
   else
@@ -470,7 +470,7 @@ if [ $gstreamer = true ]; then
 
   #run cmake
   echo Beginning cmake
-  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH) -DCMAKE_INSTALL_INCLUDEDIR=include -DQT_VERSION=5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-std=c++11
+  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH) -DCMAKE_INSTALL_INCLUDEDIR=include -DQT_VERSION=5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -flto -march=native"
 
   if [[ $? -eq 0 ]]; then
     echo -e Make ok'\n'
@@ -550,7 +550,7 @@ else
   cd build
 
   echo Beginning openauto cmake
-  cmake ${installArgs} -DGST_BUILD=true ../
+  cmake ${installArgs} -DGST_BUILD=true -DCMAKE_CXX_FLAGS="-flto -march=native" ../
   if [[ $? -eq 0 ]]; then
     echo -e Openauto CMake OK'\n'
   else
@@ -559,7 +559,7 @@ else
   fi
 
   echo Beginning openauto make
-  make -j$(nproc)
+  make -j2
 
   if [[ $? -eq 0 ]]; then
     echo -e Openauto make OK'\n'
@@ -603,7 +603,7 @@ else
 
 	echo -e Installing dash'\n'
   echo Running CMake for dash
-  cmake ${installArgs} -DGST_BUILD=TRUE ../
+  cmake ${installArgs} -DGST_BUILD=TRUE -DCMAKE_CXX_FLAGS="-flto -march=native" ../
   if [[ $? -eq 0 ]]; then
     echo -e Dash CMake OK'\n'
   else
@@ -612,7 +612,7 @@ else
   fi
 
   echo Running Dash make
-  make -j2
+  make
   
   if [[ $? -eq 0 ]]; then
       echo -e Dash make ok, executable can be found ../bin/dash
