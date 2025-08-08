@@ -86,7 +86,7 @@ video=HDMI-A-1:1440x2560@50D,rotate=90
 Note that this display does not work on Pi 3-series.
 
 ### 3. First boot and setup
-Now you can boot your Pi. If you setup your user and enabled SSH while flashing with Raspberry Pi Imager, you can use Ethernet and login via ssH. Otherwise, use a monitor and keyboard to complete user setup.
+Now you can boot your Pi. If you setup your user and enabled SSH while flashing with Raspberry Pi Imager, you can use Ethernet and login via SSH. Otherwise, use a monitor and keyboard to complete user setup.
 
 Once the Pi is running, use `sudo raspi-config` to setup Wifi, SSH and autologin.
 
@@ -152,8 +152,27 @@ Before we reboot, let's disable some unnecessary services to speed up boot time:
 
 Finally, reboot with `sudo reboot now` and you should load into openDsh.
 
-### 9. Android Auto setup in openDsh
-click the cog icon in the top right corner and turn off RtAudio - at least on my setup RtAudio does not play any audio. 
+### 9. Bluetooth setup
+
+To setup the built-in Pi Bluetooth, run `bluetoothctl` and enter these commands:
+```
+power on
+discoverable on
+pairable on
+agent on
+default-agent
+```
+
+Next, on your phone, pair to the `raspberrypi` device. Type `yes` on the Pi to authorize connection, then accept any permissions on your phone and click Pair.
+
+Answer `yes` on the Pi side to any incoming requests.
+
+Finally, type `trust YOUR:PHONE'S:BLUETOOTH:MAC:ADDRESS` and `exit`
+
+### 10. Android Auto setup in openDsh
+Click the cog icon in the top right corner and turn off `RtAudio` - at least on my setup RtAudio does not play any audio. 
+
+Enable the `Bluetooth` and `Autoconnect Last Device` toggles.
 
 1080p is a bit slow on a Pi 3B+, 720p works a lot better. 
 
