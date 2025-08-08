@@ -156,7 +156,7 @@ add_eglfs_autostart () {
   cat <<EOT >> "$HOME/.bashrc"
 
 ### EGLFS Autostart for dash application
-if [ "\$(tty)" = "/dev/tty1" ]; then
+if [ "$(basename $(tty))" = "tty1" ]; then
   # Set debugging
   export GST_DEBUG="3,video_sink:5"
 
@@ -164,6 +164,10 @@ if [ "\$(tty)" = "/dev/tty1" ]; then
   export QT_QPA_PLATFORM=eglfs
   export QT_QPA_EGLFS_SWAPINTERVAL=0
   export QT_QPA_EGLFS_FORCEVSYNC=0
+  export QT_QPA_EGLFS_INTEGRATION=eglfs_kms
+  export QT_QPA_EGLFS_KMS_ATOMIC=1
+  export QT_QPA_EGLFS_LAYER_INDEX=0
+  export QT_QPA_EGLFS_NO_VSYNC=1
 
 
   # Useful settings for high DPI/portrait displays (for example: Waveshare 5.5 inch 1440x2560)
