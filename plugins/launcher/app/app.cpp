@@ -40,7 +40,8 @@ int XWorker::get_window(uint64_t pid)
             if (pid == *(uint64_t *)this->get_window_prop(windows[i], XA_CARDINAL, "_NET_WM_PID").prop)
                 return windows[i];
         }
-        usleep(500000);
+        // Reduced retry delay for faster window detection
+        usleep(100000); // 100ms instead of 500ms
         retries++;
     }
 
@@ -99,7 +100,8 @@ void EmbeddedApp::start(QString app)
 
     QWindow *window = QWindow::fromWinId(worker->get_window(this->process.processId()));
     window->setFlags(Qt::FramelessWindowHint);
-    usleep(500000);
+    // Reduced delay for faster app embedding
+    usleep(100000); // 100ms instead of 500ms
 
     this->container->addWidget(QWidget::createWindowContainer(window, this));
 

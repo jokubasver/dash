@@ -116,7 +116,8 @@ void elm327::initialize()
     std::vector<std::string> cmds = {"ATD", "ATZ", "ATE0", "ATL0", "ATS0", "AT H0", "ATSP0", "0100"};
     for (auto const cmd : cmds) {
         this->raw_query(cmd);
-        usleep(500000);
+        // Reduced delay for faster initialization - most ELM327 commands respond within 50-100ms
+        usleep(100000); // 100ms instead of 500ms
     }
 }
 
@@ -212,6 +213,7 @@ std::string elm327::_read()
 {
     char buf[1];
     std::string str;
+    str.reserve(256); // Pre-allocate space to reduce reallocations
     
     if(adapterType==BT)
         bluetooth_watchdog->start(5000);

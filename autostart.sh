@@ -188,6 +188,13 @@ if [ "$(basename $(tty))" = "tty1" ]; then
   export QSG_RENDER_LOOP=threaded
   export QSG_ANTIALIASING_METHOD=msaa
 
+  # Pi 4 specific performance optimizations
+  export QT_QPA_EGLFS_DISABLE_INPUT_CURSOR=1
+  export QML_DISABLE_DISK_CACHE=1
+  export QSG_RENDER_LOOP=threaded
+  export QT_QUICK_CONTROLS_HOVER_ENABLED=0
+  export QT_LOGGING_RULES="*.debug=false;qt.qpa.input.debug=false"
+
 
   # Touchscreen calibration/rotation (if needed for your display)
   #
